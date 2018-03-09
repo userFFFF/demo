@@ -8,10 +8,9 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <unistd.h>
+#include "common.h"
 
-#define BUFFERSIZE 256
-
-static void	*do_echo(void *);
+static void *do_echo(void *);
 
 void sync_server(char *ip, short port)
 {
@@ -37,6 +36,9 @@ void sync_server(char *ip, short port)
         return;
     }
 
+    char buf[BUFSIZE];
+    printf("server start: %s %d\n", inet_ntop(AF_INET, &servaddr.sin_addr.s_addr, buf, sizeof(buf)), ntohs(servaddr.sin_port));
+
     for(;;) {
         struct sockaddr_in client_addr;
         socklen_t addr_len;
@@ -45,7 +47,6 @@ void sync_server(char *ip, short port)
         pthread_t tid;
         pthread_create(&tid, NULL, &do_echo, (void *) connfd);
 
-        char buf[BUFFERSIZE];
         printf("client IP: %s %d\n", inet_ntop(AF_INET, &client_addr.sin_addr.s_addr, buf, sizeof(buf)), ntohs(client_addr.sin_port));
     }
 }
@@ -55,9 +56,9 @@ static void *do_echo(void *arg)
     pthread_detach(pthread_self());
     int sockfd = (int) arg;
     ssize_t n;
-    char buf[BUFFERSIZE];
+    char buf[BUFSIZE];
 
-    while ( (n = read(sockfd, buf, BUFFERSIZE)) > 0)
+    while((n = read(sockfd, buf, sizeof(buf))) > 0)
         write(sockfd, buf, n);
 
     close(sockfd);

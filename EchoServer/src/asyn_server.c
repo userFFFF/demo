@@ -9,8 +9,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-
-#define BUFFERSIZE 256
+#include "common.h"
 
 void asyn_server(char *ip, short port)
 {
@@ -36,7 +35,7 @@ void asyn_server(char *ip, short port)
         return;
     }
 
-    char buf[BUFFERSIZE];
+    char buf[BUFSIZE];
     printf("server start: %s %d\n", inet_ntop(AF_INET, &servaddr.sin_addr.s_addr, buf, sizeof(buf)), ntohs(servaddr.sin_port));
 
     int maxfd = listenfd;
@@ -92,8 +91,8 @@ void asyn_server(char *ip, short port)
 
             if(FD_ISSET(sockfd, &rset)) {
                 ssize_t n;
-                char buf[BUFFERSIZE];
-                if((n = read(sockfd, buf, BUFFERSIZE)) == 0) {
+                char buf[BUFSIZE];
+                if((n = read(sockfd, buf, sizeof(buf))) == 0) {
                     close(sockfd);
                     FD_CLR(sockfd, &allset);
                     client[-1];
