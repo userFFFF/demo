@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 #define QUEUESIZE 4096
 
@@ -102,8 +103,16 @@ void writeToFile(char *str)
         }
     }
 
+    time_t tm;
+    time(&tm);
+    struct tm* tm_t = localtime(&tm);
+    char tmBuf[BUFSIZ];
+    sprintf(tmBuf, "%04d-%02d-%02d %02d:%02d:%02d: ", 1900+tm_t->tm_year, tm_t->tm_mon, tm_t->tm_mday, tm_t->tm_hour, tm_t->tm_min, tm_t->tm_sec);
+
     FILE *fp = fopen(logFile, "a+");
+    fwrite(tmBuf, strlen(tmBuf), 1, fp);
     fwrite(str, strlen(str), 1, fp);
+    fwrite("\n", 1, 1, fp);
     fclose(fp);
 }
 
