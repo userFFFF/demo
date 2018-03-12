@@ -16,6 +16,6 @@ KVPair *readFromFile(char *filename);
 
 char *getValue(KVPair *kv, char *key);
 
-void freeKVPair(KVPair *kv)
+void freeKVPair(KVPair *kv);
 
 #endif //ECHOSERVER_CFG_READER_H
