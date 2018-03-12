@@ -70,7 +70,7 @@ char *getValue(KVPair *kv, char *key)
         if(strcmp(key, tmp->key) == 0) {
             return tmp->value;
         }
-    }while (tmp->next);
+    }while (tmp = tmp->next);
 
     return  NULL;
 }
