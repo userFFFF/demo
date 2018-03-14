@@ -35,6 +35,8 @@ int logFileNum = 10;
 
 T_QUEUE logQueue;
 pthread_mutex_t mutex;
+pthread_t tid;
+int running;
 
 static void *do_writelog(void *);
 
@@ -50,8 +52,8 @@ void logInit(char *dir, char *filename, int logMSize, int logNum)
     logQueue.head = 0;
     logQueue.tail = 0;
 
+    running = 1;
     pthread_mutex_init(&mutex, NULL);
-    pthread_t tid;
     pthread_create(&tid, NULL, &do_writelog, NULL);
 }
 
@@ -116,9 +118,15 @@ void writeToFile(char *str)
     fclose(fp);
 }
 
+void logUninit()
+{
+    running = 0;
+    pthread_join(tid, NULL);
+}
+
 static void *do_writelog(void *arg)
 {
-    while(1) {
+    while(running) {
         if(!IsQueueEmpty(&logQueue)) {
             pthread_mutex_lock(&mutex);
             char *log = logQueue.log[logQueue.head];

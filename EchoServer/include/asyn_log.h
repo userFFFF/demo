@@ -9,4 +9,6 @@ void logInit(char *dir, char *filename, int logMSize, int logNum);
 
 void asyn_log(char *str);
 
+void logUninit();
+
 #endif //ECHOSERVER_ASYN_LOG_H
