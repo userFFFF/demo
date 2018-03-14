@@ -7,4 +7,6 @@
 
 void run_background();
 
+void daemonize(const char *cmd);
+
 #endif //ECHOSERVER_BACKGROUND_H
