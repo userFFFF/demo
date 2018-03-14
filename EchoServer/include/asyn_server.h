@@ -7,4 +7,6 @@
 
 void asyn_server(char *ip, short port);
 
+void stop_asyn_server();
+
 #endif //ECHOSERVER_ASYN_SERVER_H

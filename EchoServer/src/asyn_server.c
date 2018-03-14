@@ -11,9 +11,12 @@
 #include <unistd.h>
 #include "common.h"
 
+int listenfd;
+int client[FD_SETSIZE];
+
 void asyn_server(char *ip, short port)
 {
-    int listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if(listenfd < 0) {
         return;
     }
@@ -41,7 +44,6 @@ void asyn_server(char *ip, short port)
     int maxfd = listenfd;
     int maxi = -1;
 
-    int client[FD_SETSIZE];
     for (int i = 0; i < FD_SETSIZE; ++i) {
         client[i] = -1;
     }
@@ -53,6 +55,10 @@ void asyn_server(char *ip, short port)
     for(;;) {
         fd_set rset = allset;
         int nready = select(maxfd+1, &rset, NULL, NULL, NULL);
+
+        if(nready < 0) {
+            break;
+        }
 
         if(FD_ISSET(listenfd, &rset)) {
             struct sockaddr_in client_addr;
@@ -103,6 +109,16 @@ void asyn_server(char *ip, short port)
                 if(--nready <=0)
                     break;
             }
+        }
+    }
+}
+
+void stop_asyn_server()
+{
+    close(listenfd);
+    for(int i = 0; i < FD_SETSIZE; ++i) {
+        if(client[i] != -1) {
+            close(client[i]);
         }
     }
 }
