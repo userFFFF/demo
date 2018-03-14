@@ -1,5 +1,5 @@
 #echo Makefile
-objects = echo.o sync_server.o asyn_server.o cfg_reader.o background.o asyn_log.o
+objects = echo.o sync_server.o asyn_server.o cfg_reader.o background.o asyn_log.o single.o
 echo: $(objects)
 	cc -o echo $(objects) -lpthread
 
@@ -20,6 +20,9 @@ background.o: src/background.c
 
 asyn_log.o: src/asyn_log.c
 	cc -c src/asyn_log.c
+
+single.o: src/single.c
+	cc -c src/single.c
 
 clean:
 	rm echo $(objects)
