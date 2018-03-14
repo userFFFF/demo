@@ -55,7 +55,7 @@ void logInit(char *dir, char *filename, int logMSize, int logNum)
     pthread_create(&tid, NULL, &do_writelog, NULL);
 }
 
-void log(char *str)
+void asyn_log(char *str)
 {
     if(IsQueueFull(&logQueue)) {
         printf("Queue is full...\n");
