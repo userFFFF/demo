@@ -82,5 +82,5 @@ void freeKVPair(KVPair *kv)
     {
         free(tmp->key);
         free(tmp->value);
-    }while (tmp->next);
+    }while (tmp = tmp->next);
 }
