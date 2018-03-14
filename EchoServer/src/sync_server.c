@@ -10,11 +10,19 @@
 #include <unistd.h>
 #include "common.h"
 
+#define MAXFD 1024
+
 static void *do_echo(void *);
+
+int listenfd = -1;
+int client[MAXFD];
 
 void sync_server(char *ip, short port)
 {
-    int listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    for(int i = 0; i < MAXFD; ++i)
+        client[i] = -1;
+
+    listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if(listenfd < 0) {
         return;
     }
@@ -44,6 +52,23 @@ void sync_server(char *ip, short port)
         socklen_t addr_len;
         int connfd = accept(listenfd, (struct sockaddr *)&client_addr, &addr_len);
 
+        if(connfd < 0)
+            break;
+
+        int i;
+        for(i = 0; i < MAXFD; ++i) {
+            if(client[i] == -1) {
+                client[i] = connfd;
+                break;
+            }
+        }
+
+        if(i == MAXFD) {
+            printf("too many clients\n");
+            close(connfd);
+            continue;
+        }
+
         pthread_t tid;
         pthread_create(&tid, NULL, &do_echo, (void *) connfd);
 
@@ -61,5 +86,21 @@ static void *do_echo(void *arg)
     while((n = read(sockfd, buf, sizeof(buf))) > 0)
         write(sockfd, buf, n);
 
+    for(int i = 0; i < MAXFD; ++i) {
+        if(client[i] == sockfd) {
+            client[i] = -1;
+            break;
+        }
+    }
     close(sockfd);
+}
+
+void stop_sync_server()
+{
+    close(listenfd);
+    for(int i = 0; i < MAXFD; ++i) {
+        if(client[i] != -1) {
+            close(client[i]);
+        }
+    }
 }
