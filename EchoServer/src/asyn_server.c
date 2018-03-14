@@ -95,7 +95,7 @@ void asyn_server(char *ip, short port)
                 if((n = read(sockfd, buf, sizeof(buf))) == 0) {
                     close(sockfd);
                     FD_CLR(sockfd, &allset);
-                    client[-1];
+                    client[i] = -1;
                 } else {
                     write(sockfd, buf, n);
                 }
