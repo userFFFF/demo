@@ -25,7 +25,7 @@ void asyn_server(char *ip, short port)
     bzero(&servaddr, sizeof(struct sockaddr_in));
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(port);
-    if(ip == 0)
+    if(ip == NULL || strlen(ip) ==0)
         servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     else
         inet_pton(AF_INET, ip, &servaddr.sin_addr.s_addr);
