@@ -49,13 +49,12 @@ void stop()
         stop_asyn_server();
     else
         stop_sync_server();
-
-    logUninit();
 }
 
 void *sigint(int signo)
 {
     stop();
+    logUninit();
     syslog(LOG_INFO, "got SIGINT; exiting");
     exit(0);
 }
@@ -63,6 +62,7 @@ void *sigint(int signo)
 void *sigterm(int signo)
 {
     stop();
+    logUninit();
     syslog(LOG_INFO, "got SIGTERM; exiting");
     exit(0);
 }
@@ -70,9 +70,10 @@ void *sigterm(int signo)
 void *sighup(int signo)
 {
     syslog(LOG_INFO, "Re-reading configuration file");
-
     stop();
+    logUninit();
     readconf();
+    logInit(log_directory, log_file_name, log_file_size, log_file_number);
     start();
 }
 
@@ -81,8 +82,6 @@ int main(int argc, char *argv[]) {
     readconf();
 
     logInit(log_directory, log_file_name, log_file_size, log_file_number);
-
-    logUninit();
 
     if (strcmp(run_mode, "background") == 0) {
         char *cmd;
